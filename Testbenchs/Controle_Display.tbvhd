@@ -1,0 +1,69 @@
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+
+entity tb_Controle_Display is
+end tb_Controle_Display;
+
+architecture test of tb_Controle_Display is
+    -- Sinais de entrada
+    signal CLK, RESET : STD_LOGIC := '0';
+    signal ESTADO : STD_LOGIC_VECTOR(2 downto 0) := (others => '0');
+    signal MENSAGEM : STD_LOGIC_VECTOR(31 downto 0);
+
+    -- Instância do DUT (Device Under Test)
+    component Controle_Display
+        Port ( CLK, RESET : in STD_LOGIC;
+               ESTADO : in STD_LOGIC_VECTOR(2 downto 0);
+               MENSAGEM : out STD_LOGIC_VECTOR(31 downto 0));
+    end component;
+
+begin
+    -- Instanciar o DUT
+    UUT: Controle_Display
+        port map (
+            CLK => CLK,
+            RESET => RESET,
+            ESTADO => ESTADO,
+            MENSAGEM => MENSAGEM
+        );
+
+    -- Processo de clock
+    process
+    begin
+        while now < 500 ns loop
+            CLK <= '0';
+            wait for 5 ns;
+            CLK <= '1';
+            wait for 5 ns;
+        end loop;
+        wait;
+    end process;
+
+    -- Processo de teste
+    process
+    begin
+        -- Reset inicial
+        RESET <= '1';
+        wait for 10 ns;
+        RESET <= '0';
+
+        -- Testar diferentes estados
+        ESTADO <= "000"; -- Estado inicial (Exibir mensagem "Bem-vindo")
+        wait for 20 ns;
+
+        ESTADO <= "001"; -- Estado aguardando crédito
+        wait for 20 ns;
+
+        ESTADO <= "010"; -- Estado de seleção de produto
+        wait for 20 ns;
+
+        ESTADO <= "011"; -- Estado de pagamento
+        wait for 20 ns;
+
+        ESTADO <= "100"; -- Estado de entrega do produto
+        wait for 20 ns;
+
+        wait;
+    end process;
+
+end test;
